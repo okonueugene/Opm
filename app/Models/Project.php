@@ -27,12 +27,10 @@ class Project extends Model
     [
         'created_at',
         'updated_at',
+        'employee'
     ];
 
-    public function employee()
-    {
-        return $this->belongsTo(Employee::class);
-    }
+    protected $appends=['employee_name'];
 
     public function requisitions()
     {
@@ -44,5 +42,21 @@ class Project extends Model
         return $this->hasMany(Task::class);
     }
 
+    public function employee()
+    {
+        return $this->belongsTo(Employee::class);
+    }
+
+    public function getCreatedAtAttribute($value)
+    {
+        return date('d-m-Y', strtotime($value));
+    }
+
+   
+
+    public function getEmployeeNameAttribute()
+    {
+        return $this->employee->name;
+    }
 
 }

@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('deposit_status')->default(0);
             $table->string('contract_status')->default(0);
             $table->string('project_manager');
+            $table->string('total_cost');
             $table->timestamps();
         });
     }

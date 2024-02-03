@@ -17,8 +17,10 @@ return new class extends Migration
             $table->foreignId('employee_id')->constrained()->onDelete('cascade');
             $table->foreignId('project_id')->constrained()->onDelete('cascade');
             $table->string('requisitioner');
+            $table->date('date');
             $table->string('vendor');
             $table->string('department');
+            $table->string('total_cost');
             $table->timestamps();
         });
     }
