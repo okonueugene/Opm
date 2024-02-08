@@ -21,7 +21,6 @@ class RequisitionFactory extends Factory
             'project_id' => fake()->randomElement(\App\Models\Project::pluck('id')->toArray()),
             'date' => fake()->dateTimeBetween('-1 years', 'now'),
             'employee_id' => fake()->randomElement(\App\Models\Employee::pluck('id')->toArray()),
-            'requisitioner' => fake()->name(),
             'department' => fake()->word(),
             'vendor' => fake()->company(),
             'total_cost' => fake()->randomFloat(2, 1000, 10000),

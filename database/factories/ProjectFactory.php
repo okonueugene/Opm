@@ -22,8 +22,7 @@ class ProjectFactory extends Factory
         return [
             'serial_number' => fake()->unique()->randomNumber(8),
             'name' => fake()->word(),
-            'description' => fake()->sentence(),
-            'date' => fake()->dateTimeBetween('-1 years', 'now'),
+            'due_date' => fake()->dateTimeBetween('-1 years', 'now'),
             'department' => fake()->word(),
             'deposit_status' => fake()->randomElement([1,0]),
             'contract_status' => fake()->randomElement([1,0]),

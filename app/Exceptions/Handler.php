@@ -2,8 +2,10 @@
 
 namespace App\Exceptions;
 
-use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
+use Illuminate\Session\TokenMismatchException;
+use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Handler extends ExceptionHandler
 {
@@ -26,5 +28,33 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
             //
         });
+    }
+
+    public function render($request, Throwable $exception)
+    {
+        if ($exception instanceof TokenMismatchException) {
+            return redirect()->route('/')->with('message', 'Your session has expired. Please try again');
+        }
+
+        if ($exception instanceof NotFoundHttpException) {
+            return redirect()->route('/')->withErrors(['message' => 'Object Not Found']);
+        }
+
+        if ($exception instanceof \Spatie\Permission\Exceptions\UnauthorizedException) {
+            $this->renderable(function (\Spatie\Permission\Exceptions\UnauthorizedException $e, $request) {
+                return redirect()->route('/')->withErrors(['message' => 'You are not authorized to access this page.']);
+            });
+        }
+        // Add handling for TransportException here
+        if ($exception instanceof \Swift_TransportException) {
+            return redirect()->route('/')->withErrors(['message' => 'Email not sent.']);
+
+        }
+        if ($exception instanceof \Symfony\Component\Mailer\Exception\TransportException) {
+            //go to login page
+            return redirect()->route('/')->withErrors(['message' => 'Email not sent.']);
+        }
+
+        return parent::render($request, $exception);
     }
 }

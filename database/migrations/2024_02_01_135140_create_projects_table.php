@@ -14,15 +14,17 @@ return new class extends Migration
         Schema::create('projects', function (Blueprint $table) {
             $table->id();
             $table->string('serial_number');
-            $table->string('name');
-            $table->string('description');
-            $table->date('date');
-            $table->string('department');
+            $table->string('name')->nullable();
+            $table->date('posting_date')->default(now());
+            $table->date('due_date')->nullable();
+            $table->string('department')->nullable();
             $table->foreignId('employee_id')->constrained()->onDelete('cascade');
             $table->string('deposit_status')->default(0);
             $table->string('contract_status')->default(0);
-            $table->string('project_manager');
-            $table->string('total_cost');
+            $table->string('project_manager')->nullable();
+            $table->string('project_client')->nullable();
+            $table->string('budget')->nullable();
+            $table->string('total_cost')->nullable();
             $table->timestamps();
         });
     }

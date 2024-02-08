@@ -1,8 +1,8 @@
-import { Link, Head } from "@inertiajs/react";
+import { Link, Head, useForm } from "@inertiajs/react";
 import { useState } from "react";
 import Modal from "@/Components/Modal";
 
-export default function Home({ auth, laravelVersion, phpVersion }) {
+export default function Home({ auth, departments, employees, projects }) {
     const [isDeclareProjectModalOpen, setIsDeclareProjectModalOpen] =
         useState(false);
     const [isPostRequisitionModalOpen, setIsPostRequisitionModalOpen] =
@@ -72,6 +72,101 @@ export default function Home({ auth, laravelVersion, phpVersion }) {
         setTasks(updatedTasks);
     };
 
+    const departmentsArray = Object.keys(departments).map((key) => {
+        return departments[key];
+    });
+
+    const handleProjectSubmit = (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const data = {
+            name: formData.get("name"),
+            budget: formData.get("budget"),
+            due_date: formData.get("due_date"),
+            deposit_status: formData.get("deposit"),
+            contract_status: formData.get("checked_contract"),
+            prepared_by: formData.get("prepared_by"),
+            department: formData.get("department"),
+            project_manager: formData.get("project_manager"),
+            project_client: formData.get("project_client"),
+            tasks: tasks,
+        };
+        console.log(data);
+        // Send the data to the server
+        let url = route("addProject");
+
+        //use axios to send the data to the server
+        axios
+            .post(url, data)
+            .then((response) => {
+                console.log(response);
+                if (response.status === 200) {
+                    alert("Project declared successfully");
+
+                    //clear the form
+                    e.target.reset();
+
+                    //clear the tasks
+                    setTasks([]);
+                } else {
+                    alert("An error occurred while declaring the project");
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+
+                if (error.response) {
+                    console.log(error.response.data);
+                }
+            });
+
+        // Close the modal
+        closeDeclareProjectModal();
+    };
+
+    const handleRequisitionSubmit = (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const data = {
+            project_id: formData.get("project_id"),
+            employee_id: formData.get("requisitioner"),
+            vendor: formData.get("vendor_name"),
+            department: formData.get("department"),
+            items: items,
+        };
+        console.log(data);
+        // Send the data to the server
+        let url = route("addRequisition");
+
+        //use axios to send the data to the server
+        axios
+            .post(url, data)
+            .then((response) => {
+                console.log(response);
+                if (response.status === 200) {
+                    alert(response.data.message);
+
+                    //clear the form
+                    e.target.reset();
+
+                    //clear the items
+                    setItems([]);
+                } else {
+                    alert("An error occurred while posting the requisition");
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+
+                if (error.response) {
+                    console.log(error.response.data);
+                    alert("An error occurred while posting the requisition");
+                }
+            });
+
+        // Close the modal
+        closePostRequisitionModal();
+    };
     return (
         <>
             <Head title="Home" />
@@ -150,7 +245,9 @@ export default function Home({ auth, laravelVersion, phpVersion }) {
                                             Declare a Project
                                         </div>
                                         <div className="mt-4 text-sm text-gray-500 dark:text-gray-400">
-                                            <form method="post">
+                                            <form
+                                                onSubmit={handleProjectSubmit}
+                                            >
                                                 <div className="mb-3">
                                                     <label
                                                         htmlFor="name"
@@ -169,16 +266,17 @@ export default function Home({ auth, laravelVersion, phpVersion }) {
                                                 </div>
                                                 <div className="mb-3">
                                                     <label
-                                                        htmlFor="description"
+                                                        htmlFor="budjet"
                                                         className="block mb-2 text-sm text-gray-600 dark:text-gray-400"
                                                     >
-                                                        Project Description
+                                                        Project Budget
                                                     </label>
-                                                    <textarea
-                                                        name="description"
-                                                        id="description"
+                                                    <input
+                                                        type="number"
+                                                        name="budget"
+                                                        id="budget"
                                                         className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500 sm:text-sm"
-                                                        placeholder="Project Description"
+                                                        placeholder="Project Budjet"
                                                         required
                                                     />
                                                 </div>
@@ -187,14 +285,14 @@ export default function Home({ auth, laravelVersion, phpVersion }) {
                                                         htmlFor="date"
                                                         className="block mb-2 text-sm text-gray-600 dark:text-gray-400"
                                                     >
-                                                        Date
+                                                        Due Date
                                                     </label>
                                                     <input
                                                         type="date"
-                                                        name="date"
-                                                        id="date"
+                                                        name="due_date"
+                                                        id="due_date"
                                                         className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500 sm:text-sm"
-                                                        placeholder="Date"
+                                                        placeholder="Due Date"
                                                         required
                                                     />
                                                 </div>
@@ -260,12 +358,23 @@ export default function Home({ auth, laravelVersion, phpVersion }) {
                                                         placeholder="Prepared By"
                                                         required
                                                     >
-                                                        <option value="1">
-                                                            John Doe
-                                                        </option>
-                                                        <option value="2">
-                                                            Jane Doe
-                                                        </option>
+                                                        {employees.map(
+                                                            (
+                                                                employee,
+                                                                index
+                                                            ) => (
+                                                                <option
+                                                                    key={index}
+                                                                    value={
+                                                                        employee.id
+                                                                    }
+                                                                >
+                                                                    {
+                                                                        employee.name
+                                                                    }
+                                                                </option>
+                                                            )
+                                                        )}
                                                     </select>
                                                 </div>
                                                 <div className="mb-3">
@@ -279,15 +388,23 @@ export default function Home({ auth, laravelVersion, phpVersion }) {
                                                         name="department"
                                                         id="department"
                                                         className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500 sm:text-sm"
-                                                        placeholder="Department"
                                                         required
                                                     >
-                                                        <option value="1">
-                                                            Department 1
-                                                        </option>
-                                                        <option value="2">
-                                                            Department 2
-                                                        </option>
+                                                        {departmentsArray.map(
+                                                            (
+                                                                department,
+                                                                index
+                                                            ) => (
+                                                                <option
+                                                                    key={index}
+                                                                    value={
+                                                                        department
+                                                                    }
+                                                                >
+                                                                    {department}
+                                                                </option>
+                                                            )
+                                                        )}
                                                     </select>
                                                 </div>
                                                 <div className="mb-3">
@@ -304,12 +421,23 @@ export default function Home({ auth, laravelVersion, phpVersion }) {
                                                         placeholder="Project Manager"
                                                         required
                                                     >
-                                                        <option value="1">
-                                                            John Doe
-                                                        </option>
-                                                        <option value="2">
-                                                            Jane Doe
-                                                        </option>
+                                                        {employees.map(
+                                                            (
+                                                                employee,
+                                                                index
+                                                            ) => (
+                                                                <option
+                                                                    key={index}
+                                                                    value={
+                                                                        employee.name
+                                                                    }
+                                                                >
+                                                                    {
+                                                                        employee.name
+                                                                    }
+                                                                </option>
+                                                            )
+                                                        )}
                                                     </select>
                                                 </div>
                                                 <div className="mb-3">
@@ -441,7 +569,36 @@ export default function Home({ auth, laravelVersion, phpVersion }) {
                                         Post Requisition
                                     </div>
                                     <div className="mt-4 text-sm text-gray-500 dark:text-gray-400">
-                                        <form method="post">
+                                        <form
+                                            onSubmit={handleRequisitionSubmit}
+                                        >
+                                            <div className="mb-3">
+                                                <label
+                                                    htmlFor="project_id"
+                                                    className="block mb-2 text-sm text-gray-600 dark:text-gray-400"
+                                                ></label>
+                                                Project Name
+                                                <select
+                                                    name="project_id"
+                                                    id="project_id"
+                                                    className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500 sm:text-sm"
+                                                    placeholder="Project Name"
+                                                    required
+                                                >
+                                                    {projects.map(
+                                                        (project, index) => (
+                                                            <option
+                                                                key={index}
+                                                                value={
+                                                                    project.id
+                                                                }
+                                                            >
+                                                                {project.name}
+                                                            </option>
+                                                        )
+                                                    )}
+                                                </select>
+                                            </div>
                                             <div className="mb-3">
                                                 <label
                                                     htmlFor="name"
@@ -450,35 +607,25 @@ export default function Home({ auth, laravelVersion, phpVersion }) {
                                                     Requisitioner Name
                                                 </label>
                                                 <select
-                                                    name="name"
-                                                    id="name"
+                                                    name="requisitioner"
+                                                    id="requisitioner"
                                                     className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500 sm:text-sm"
                                                     placeholder="Requisitioner Name"
                                                     required
                                                 >
-                                                    <option value="1">
-                                                        John Doe
-                                                    </option>
-                                                    <option value="2">
-                                                        Jane Doe
-                                                    </option>
+                                                    {employees.map(
+                                                        (employee, index) => (
+                                                            <option
+                                                                key={index}
+                                                                value={
+                                                                    employee.id
+                                                                }
+                                                            >
+                                                                {employee.name}
+                                                            </option>
+                                                        )
+                                                    )}
                                                 </select>
-                                            </div>
-                                            <div className="mb-3">
-                                                <label
-                                                    htmlFor="date"
-                                                    className="block mb-2 text-sm text-gray-600 dark:text-gray-400"
-                                                >
-                                                    Date
-                                                </label>
-                                                <input
-                                                    type="date"
-                                                    name="date"
-                                                    id="date"
-                                                    className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500 sm:text-sm"
-                                                    placeholder="Date"
-                                                    required
-                                                />
                                             </div>
                                             <div className="mb-3">
                                                 <label
@@ -495,6 +642,33 @@ export default function Home({ auth, laravelVersion, phpVersion }) {
                                                     placeholder="Vendor Name"
                                                     required
                                                 />
+                                            </div>
+                                            <div className="mb-3">
+                                                <label
+                                                    htmlFor="department"
+                                                    className="block mb-2 text-sm text-gray-600 dark:text-gray-400"
+                                                >
+                                                    Department
+                                                </label>
+                                                <select
+                                                    name="department"
+                                                    id="department"
+                                                    className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500 sm:text-sm"
+                                                    required
+                                                >
+                                                    {departmentsArray.map(
+                                                        (department, index) => (
+                                                            <option
+                                                                key={index}
+                                                                value={
+                                                                    department
+                                                                }
+                                                            >
+                                                                {department}
+                                                            </option>
+                                                        )
+                                                    )}
+                                                </select>
                                             </div>
                                             <div className="mb-3">
                                                 <label className="block mb-2 text-sm text-gray-600 dark:text-gray-400">
@@ -517,7 +691,7 @@ export default function Home({ auth, laravelVersion, phpVersion }) {
                                                         Actions
                                                     </div>
                                                 </div>
-                                                <div className="max-h-40 overflow-y-auto">
+                                                <div className="max-h-70 overflow-y-auto">
                                                     {items.map(
                                                         (item, index) => (
                                                             <div
@@ -671,12 +845,12 @@ export default function Home({ auth, laravelVersion, phpVersion }) {
                 .logo{
                     position: absolute;
                     top: 0;
-                    left: 50%;
+                    left: 45%;
                     margin: 20px;
                 }
                 .logo img{
-                    width: 100px;
-                    height: 100px;
+                    width: 150px;
+                    height: 150px;
                 }
                 .add-item{
                     display: flex;

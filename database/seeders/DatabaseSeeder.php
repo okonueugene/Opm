@@ -24,12 +24,12 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
         ]);
 
-        \App\Models\User::factory(10)->create();
-        \App\Models\Employee::factory(15)->create();
-        \App\Models\Project::factory(30)->create();
-        \App\Models\Requisition::factory(30)->create();
-        \App\Models\Item::factory(100)->create();
-        \App\Models\Task::factory(65)->create();
+        // \App\Models\User::factory(10)->create();
+        // \App\Models\Employee::factory(15)->create();
+        // \App\Models\Project::factory(30)->create();
+        // \App\Models\Requisition::factory(30)->create();
+        // \App\Models\Item::factory(100)->create();
+        // \App\Models\Task::factory(65)->create();
 
 
     }

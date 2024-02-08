@@ -1,10 +1,10 @@
 <?php
 
-use Inertia\Inertia;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Foundation\Application;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectsController;
+use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,7 +15,7 @@ use App\Http\Controllers\ProjectsController;
 | routes are loaded by the RouteServiceProvider within a group which
 | contains the "web" middleware group. Now create something great!
 |
-*/
+ */
 
 Route::get('/', function () {
     return Inertia::render('Home', [
@@ -23,6 +23,10 @@ Route::get('/', function () {
         'canRegister' => Route::has('register'),
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
+        'departments' =>config('data.department'),
+        'designations' =>config('data.designation'),
+        'employees' => \App\Models\Employee::all(),
+        'projects' => \App\Models\Project::all(),
     ]);
 });
 
@@ -35,15 +39,17 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    //projects routes
-    Route::get('/projects', [ProjectsController::class, 'index'])->name('projects');
-
-
     //employees routes
     Route::get('/employees', [App\Http\Controllers\EmployeeController::class, 'index'])->name('employees');
 
-    //requisitions routes
-    Route::get('/requisitions', [App\Http\Controllers\RequisitionsController::class, 'index'])->name('requisitions');
 });
 
-require __DIR__.'/auth.php';
+//projects routes
+Route::get('/projects', [ProjectsController::class, 'index'])->name('projects');
+Route::post('/projects', [ProjectsController::class, 'addProject'])->name('addProject');
+
+//requisitions routes
+Route::get('/requisitions', [App\Http\Controllers\RequisitionsController::class, 'index'])->name('requisitions');
+Route::post('/requisitions', [App\Http\Controllers\RequisitionsController::class, 'addRequisition'])->name('addRequisition');
+
+require __DIR__ . '/auth.php';

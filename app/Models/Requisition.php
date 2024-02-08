@@ -12,10 +12,11 @@ class Requisition extends Model
     protected $fillable =
     [
         'project_id',
-        'description',
-        'quantity',
-        'unit_price',
-        'total_price',
+        'employee_id',
+        'date',
+        'vendor',
+        'department',
+        'total_cost',
     ];
 
     protected $hidden =
@@ -32,11 +33,6 @@ class Requisition extends Model
     public function items()
     {
         return $this->hasMany(Item::class);
-    }
-
-    public function user()
-    {
-        return $this->belongsTo(User::class);
     }
 
     public function employee()
