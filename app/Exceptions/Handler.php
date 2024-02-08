@@ -35,6 +35,7 @@ class Handler extends ExceptionHandler
         if ($exception instanceof TokenMismatchException) {
             return redirect()->route('/')->with('message', 'Your session has expired. Please try again');
         }
+        //unauthorized user
 
         if ($exception instanceof NotFoundHttpException) {
             return redirect()->route('/')->withErrors(['message' => 'Object Not Found']);

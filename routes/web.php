@@ -41,15 +41,15 @@ Route::middleware('auth')->group(function () {
 
     //employees routes
     Route::get('/employees', [App\Http\Controllers\EmployeeController::class, 'index'])->name('employees');
+    Route::get('/requisitions', [App\Http\Controllers\RequisitionsController::class, 'index'])->name('requisitions');
+    Route::get('/projects', [ProjectsController::class, 'index'])->name('projects');
 
 });
 
 //projects routes
-Route::get('/projects', [ProjectsController::class, 'index'])->name('projects');
 Route::post('/projects', [ProjectsController::class, 'addProject'])->name('addProject');
 
 //requisitions routes
-Route::get('/requisitions', [App\Http\Controllers\RequisitionsController::class, 'index'])->name('requisitions');
 Route::post('/requisitions', [App\Http\Controllers\RequisitionsController::class, 'addRequisition'])->name('addRequisition');
 
 require __DIR__ . '/auth.php';

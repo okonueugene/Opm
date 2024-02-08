@@ -13,7 +13,7 @@ class RequisitionsController extends Controller
     {
         $requistions = Requisition::all();
 
-        $requistions->load('project', 'items', 'user', 'employee');
+        $requistions->load('project', 'items','employee');
 
         return Inertia::render('Requisitions/Requisitions', [
             'requistions' => $requistions,
